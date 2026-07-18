@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Επιβεβαίωση Κράτησης</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333333; }
+        .email-container { max-width: 600px; margin: auto; background: #fff; border: 1px solid #4880ff; border-radius: 5px; }
+        .email-header { background: #4880ff; color: #fff; text-align: center; padding: 20px; }
+        .email-body { padding: 20px; }
+        .email-footer { background: #f1f1f1; color: #777; text-align: center; padding: 10px; }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <div class="email-header">
+        <h1>Επιβεβαίωση Κράτησης</h1>
+    </div>
+    <div class="email-body">
+        <p>Αγαπητέ/ή {{firstName}},</p>
+        <p>Η κράτησή σας επιβεβαιώθηκε με επιτυχία!</p>
+        <p>Λεπτομέρειες κράτησης:</p>
+        <ul>
+            <li>Ημερομηνία: {{bookingDate}}</li>
+            <li>Ώρα: {{bookingTime}}</li>
+            <li>Γήπεδο: {{courtName}}</li>
+        </ul>
+        <p>Ανυπομονούμε να σας δούμε!</p>
+    </div>
+    <div class="email-footer">
+        <p>&copy; 2025 BookACourt</p>
+        <a href="{{frontendUrl}}" target="_blank">
+            <img class="logo" src="{{frontendUrl}}/logo.png" alt="BookACourt Logo" />
+        </a>
+    </div>
+</div>
+</body>
+</html>

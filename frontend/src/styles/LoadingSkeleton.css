@@ -1,0 +1,423 @@
+/* LoadingSkeleton Component Styles */
+
+.loading-skeleton-container {
+  width: 100%;
+}
+
+/* ============================================
+   STATS SKELETON
+   ============================================ */
+
+.skeleton-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-lg);
+  margin-bottom: var(--space-2xl);
+}
+
+.skeleton-stat-card {
+  background: var(--background-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--border-light);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  gap: var(--space-lg);
+}
+
+.skeleton-stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--background-tertiary);
+}
+
+.skeleton-stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    90deg,
+    var(--background-tertiary) 25%,
+    var(--background-secondary) 50%,
+    var(--background-tertiary) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.skeleton-stat-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.skeleton-value {
+  height: 36px;
+  width: 80%;
+  border-radius: var(--radius-md);
+}
+
+/* ============================================
+   BOOKINGS SKELETON
+   ============================================ */
+
+.skeleton-bookings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-lg);
+}
+
+.skeleton-booking-card {
+  background: var(--background-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--border-light);
+}
+
+.skeleton-booking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.skeleton-badge {
+  width: 80px;
+  height: 24px;
+  border-radius: var(--radius-full);
+}
+
+.skeleton-booking-body {
+  margin-bottom: var(--space-lg);
+}
+
+.skeleton-booking-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-light);
+}
+
+.skeleton-button-small {
+  width: 80px;
+  height: 32px;
+  border-radius: var(--radius-md);
+}
+
+/* ============================================
+   COURTS SKELETON
+   ============================================ */
+
+.skeleton-courts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-lg);
+}
+
+.skeleton-court-card {
+  background: var(--background-primary);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--border-light);
+}
+
+.skeleton-court-image {
+  width: 100%;
+  height: 180px;
+  border-radius: 0;
+}
+
+.skeleton-court-content {
+  padding: var(--space-lg);
+}
+
+.skeleton-court-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-light);
+}
+
+.skeleton-price {
+  width: 60px;
+  height: 24px;
+  border-radius: var(--radius-md);
+}
+
+/* ============================================
+   TABLE SKELETON
+   ============================================ */
+
+.skeleton-table {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.skeleton-table-header {
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--background-tertiary);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-sm);
+}
+
+.skeleton-th {
+  flex: 1;
+  height: 16px;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton-table-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.skeleton-table-row {
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.skeleton-table-row:last-child {
+  border-bottom: none;
+}
+
+.skeleton-td {
+  flex: 1;
+  height: 20px;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================
+   CARD SKELETON
+   ============================================ */
+
+.skeleton-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.skeleton-card-item {
+  background: var(--background-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--border-light);
+}
+
+.skeleton-card-header {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.skeleton-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-card-header-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.skeleton-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* ============================================
+   LIST SKELETON
+   ============================================ */
+
+.skeleton-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.skeleton-list-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.skeleton-list-item:last-child {
+  border-bottom: none;
+}
+
+.skeleton-list-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.skeleton-action {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+}
+
+/* ============================================
+   FILTERS SKELETON
+   ============================================ */
+
+.skeleton-filters {
+  background: var(--background-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--border-light);
+  margin-bottom: var(--space-xl);
+}
+
+.skeleton-filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xl);
+}
+
+.skeleton-filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-lg);
+}
+
+.skeleton-filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.skeleton-label {
+  height: 14px;
+  width: 60%;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton-input {
+  height: 44px;
+  border-radius: var(--radius-md);
+}
+
+/* ============================================
+   DASHBOARD SKELETON
+   ============================================ */
+
+.skeleton-dashboard {
+  width: 100%;
+}
+
+.skeleton-page-header {
+  margin-bottom: var(--space-xl);
+}
+
+.skeleton-title {
+  height: 32px;
+  width: 40%;
+  margin-bottom: var(--space-sm);
+  border-radius: var(--radius-md);
+}
+
+.skeleton-subtitle {
+  height: 18px;
+  width: 60%;
+  border-radius: var(--radius-md);
+}
+
+.skeleton-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-xl);
+}
+
+/* ============================================
+   SKELETON BASE STYLES
+   ============================================ */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--background-tertiary) 25%,
+    #e8e8e8 50%,
+    var(--background-tertiary) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-md);
+}
+
+.skeleton-text {
+  height: 16px;
+  width: 100%;
+  margin-bottom: var(--space-xs);
+}
+
+.skeleton-text:last-child {
+  margin-bottom: 0;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .skeleton-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .skeleton-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .skeleton-filters-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .skeleton-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .skeleton-bookings-grid,
+  .skeleton-courts-grid {
+    grid-template-columns: 1fr;
+  }
+}

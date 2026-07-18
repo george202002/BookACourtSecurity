@@ -1,0 +1,1042 @@
+/* FindCourts - User-Friendly Court Discovery */
+
+/* Error Styles for Date Validation */
+.filter-input.error {
+  border-color: var(--error);
+  box-shadow: 0 0 0 3px rgba(249, 60, 101, 0.1);
+}
+
+.error-message {
+  color: var(--error);
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: var(--space-xs);
+}
+
+/* Filters Section */
+.filter-actions {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  align-items: end;
+}
+
+.filters-grid .filter-group:nth-child(4) {
+  grid-row: 2;
+  grid-column: 1;
+}
+
+.filters-grid .filter-group:nth-child(5) {
+  grid-row: 2;
+  grid-column: 2 / -1;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.filter-label {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 14px;
+  margin-bottom: var(--space-xs);
+}
+
+.filter-input,
+.filter-select {
+  padding: var(--space-sm) var(--space-md);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  background: var(--background-primary);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px var(--primary-blue-light);
+  transform: translateY(-1px);
+}
+
+.filter-input::placeholder {
+  color: var(--text-muted);
+}
+
+.filter-input:disabled,
+.filter-input.disabled {
+  background: var(--background-secondary);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  border-color: var(--border-light);
+  opacity: 0.6;
+}
+
+.filter-input:disabled::placeholder,
+.filter-input.disabled::placeholder {
+  color: var(--text-tertiary);
+}
+
+.filter-info-text {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: var(--space-xs);
+  padding: var(--space-xs);
+  background: var(--background-secondary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+}
+
+.price-range-inputs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.price-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.price-separator {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Courts Grid - 2 per row */
+.courts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-xl);
+  margin-top: var(--space-lg);
+}
+
+/* Visual Court Cards with Court Images */
+.court-card-visual {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+  height: 500px;
+  box-shadow: var(--shadow-large);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 2px solid var(--border-light);
+}
+
+.court-card-visual:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
+  border-color: var(--primary-blue);
+}
+
+.court-background {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.court-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.4) 0%,
+    rgba(0, 0, 0, 0.2) 40%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  pointer-events: none;
+}
+
+/* Simplified Court Header */
+.court-header-simple {
+  position: absolute;
+  top: var(--space-md);
+  left: var(--space-md);
+  right: var(--space-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 2;
+}
+
+.court-name-simple {
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: var(--space-md);
+}
+
+.price-simple {
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--primary-blue);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 700;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+.players-on-court {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+}
+
+/* Available Spots for New Booking */
+.available-spot-simple {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  transition: all 0.2s ease;
+  z-index: 4;
+  cursor: pointer;
+}
+
+.available-spot-simple:hover {
+  transform: translate(-50%, -50%) scale(1.15);
+  z-index: 5;
+}
+
+.join-circle-simple {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed var(--primary-blue);
+  color: var(--primary-blue);
+  font-size: 16px;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  animation: pulse-join 2s infinite;
+}
+
+.available-spot-simple:hover .join-circle-simple {
+  background: var(--primary-blue);
+  border-color: white;
+  border-style: solid;
+  color: white;
+  animation: none;
+}
+
+@keyframes pulse-join {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+/* Simple Footer */
+.court-footer-simple {
+  position: absolute;
+  bottom: var(--space-md);
+  left: var(--space-md);
+  right: var(--space-md);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 2;
+}
+
+.court-info-simple {
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.players-count-simple {
+  background: var(--primary-blue);
+  color: white;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Visual court cards override standard court card styles */
+.courts-grid .court-card-visual {
+  /* Override any conflicting styles from .court-card */
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.court-card {
+  background: var(--background-primary);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.court-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--primary-blue) 0%,
+    var(--primary-blue-hover) 100%
+  );
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.court-card:hover {
+  border-color: var(--primary-blue-light);
+  box-shadow: var(--shadow-large);
+  transform: translateY(-4px);
+}
+
+.court-card:hover::before {
+  transform: scaleX(1);
+}
+
+.court-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-md);
+  gap: var(--space-md);
+}
+
+.court-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.court-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-xs) 0;
+  line-height: 1.3;
+}
+
+.court-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+
+.court-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.type-badge {
+  background: var(--primary-blue-light);
+  color: var(--primary-blue);
+  border: 1px solid var(--primary-blue);
+}
+
+.env-badge {
+  background: var(--success-light);
+  color: var(--success);
+  border: 1px solid var(--success);
+}
+
+.court-price {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.price-value {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary-blue);
+  line-height: 1;
+}
+
+.price-unit {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.price-total {
+  display: block;
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+.court-info {
+  margin-bottom: var(--space-lg);
+}
+
+.court-location {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.location-icon {
+  font-size: 14px;
+}
+
+.location-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.court-description {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.court-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+}
+
+.court-actions .btn {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 2px solid var(--border-medium);
+  transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+  background: var(--background-secondary);
+  border-color: var(--primary-blue);
+  color: var(--primary-blue);
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background: linear-gradient(
+    135deg,
+    var(--primary-blue) 0%,
+    var(--primary-blue-hover) 100%
+  );
+  color: var(--text-on-dark);
+  border: 2px solid var(--primary-blue);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(
+    135deg,
+    var(--primary-blue-hover) 0%,
+    var(--primary-blue) 100%
+  ) !important;
+  color: var(--text-on-dark) !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
+
+.btn-secondary {
+  background: var(--background-secondary);
+  color: var(--text-secondary);
+  border: 2px solid var(--border-medium);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: var(--background-primary);
+  border-color: var(--primary-blue);
+  color: var(--primary-blue);
+  transform: translateY(-1px);
+}
+
+/* Page Size Selector */
+.page-size-selector {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.page-size-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.page-size-select {
+  padding: var(--space-xs) var(--space-sm);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  background: var(--background-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.page-size-select:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px var(--primary-blue-light);
+}
+
+/* Pagination */
+.pagination-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  align-items: center;
+  margin-top: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: 2px solid var(--border-light);
+}
+
+.pagination-info {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.pagination-btn {
+  padding: var(--space-sm) var(--space-md);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--background-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  border-color: var(--primary-blue);
+  background: var(--primary-blue-light);
+  color: var(--primary-blue);
+  transform: translateY(-1px);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.page-numbers {
+  display: flex;
+  gap: var(--space-xs);
+  margin: 0 var(--space-sm);
+}
+
+.page-number {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--background-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.page-number:hover {
+  border-color: var(--primary-blue);
+  background: var(--primary-blue-light);
+  color: var(--primary-blue);
+  transform: translateY(-1px);
+}
+
+.page-number.active {
+  border-color: var(--primary-blue);
+  background: var(--primary-blue);
+  color: var(--text-on-dark);
+  box-shadow: var(--shadow-medium);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .filters-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .filters-grid .filter-group:nth-child(4),
+  .filters-grid .filter-group:nth-child(5) {
+    grid-row: auto;
+    grid-column: 1;
+  }
+
+  .courts-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  /* Ensure court background works on mobile */
+  .court-background {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+  }
+
+  .court-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.4) 0%,
+      rgba(0, 0, 0, 0.2) 40%,
+      rgba(0, 0, 0, 0.6) 100%
+    );
+    pointer-events: none;
+  }
+
+  /* Ensure visual cards work well on mobile */
+  .courts-grid .court-card-visual {
+    margin: 0 auto;
+    max-width: 100%;
+    width: 100%;
+    height: 350px;
+    min-height: 350px;
+    display: block;
+    position: relative;
+  }
+
+  .court-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+
+  .court-price {
+    text-align: left;
+  }
+
+  .court-actions {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .court-actions .btn {
+    width: 100%;
+  }
+
+  .price-range-inputs {
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .price-separator {
+    text-align: center;
+  }
+
+  .filter-actions {
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .filter-actions .btn {
+    width: 100%;
+  }
+
+  .page-size-selector {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+
+  .pagination-container {
+    margin-top: var(--space-lg);
+  }
+
+  .pagination-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-xs);
+  }
+
+  .pagination-btn {
+    font-size: 12px;
+    padding: var(--space-xs) var(--space-sm);
+    min-width: 60px;
+  }
+
+  .page-number {
+    width: 36px;
+    height: 36px;
+    font-size: 12px;
+  }
+
+  .page-numbers {
+    margin: var(--space-xs) 0;
+  }
+
+  /* Card headers responsive */
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+
+  .card-actions {
+    width: 100%;
+  }
+
+  /* Court cards */
+  .court-card {
+    padding: var(--space-md);
+  }
+
+  .court-name {
+    font-size: 16px;
+  }
+
+  .court-badges {
+    flex-wrap: wrap;
+  }
+
+  .price-value {
+    font-size: 20px;
+  }
+
+  .court-description {
+    -webkit-line-clamp: 3;
+  }
+
+  /* Visual court cards mobile styles */
+  .court-header-simple {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+  }
+
+  .court-name-simple {
+    font-size: 16px;
+    margin-right: 0;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .price-simple {
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .court-footer-simple {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+  }
+
+  .court-info-simple {
+    font-size: 11px;
+  }
+
+  .join-circle-simple {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+
+  /* Ensure players on court positioning works on mobile */
+  .players-on-court {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+  }
+
+  .available-spot-simple {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: 4;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  .filters-grid {
+    gap: var(--space-sm);
+  }
+
+  .filter-group {
+    gap: var(--space-xs);
+  }
+
+  .filter-input,
+  .filter-select {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: 14px;
+  }
+
+  .card-content {
+    padding: 0 var(--space-sm) var(--space-sm);
+  }
+
+  .card-header {
+    padding: var(--space-sm) var(--space-sm) 0;
+  }
+
+  .card-title {
+    font-size: 18px;
+  }
+
+  .court-card {
+    padding: var(--space-sm);
+  }
+
+  .court-name {
+    font-size: 15px;
+  }
+
+  .court-badge {
+    font-size: 10px;
+    padding: 2px var(--space-xs);
+  }
+
+  .price-value {
+    font-size: 18px;
+  }
+
+  .price-unit {
+    font-size: 11px;
+  }
+
+  .price-total {
+    font-size: 9px;
+  }
+
+  .court-location {
+    font-size: 12px;
+  }
+
+  .court-description {
+    font-size: 12px;
+    -webkit-line-clamp: 2;
+  }
+
+  .court-actions .btn {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: 12px;
+  }
+
+  /* Visual court cards for very small screens */
+  .court-card-visual {
+    height: 280px;
+    min-height: 280px;
+    width: 100%;
+    display: block;
+    position: relative;
+  }
+
+  .court-header-simple {
+    padding: var(--space-xs);
+    gap: var(--space-xs);
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .court-name-simple {
+    font-size: 14px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .price-simple {
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+
+  .court-footer-simple {
+    padding: var(--space-xs);
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .court-info-simple {
+    font-size: 10px;
+  }
+
+  .players-count-simple {
+    font-size: 11px;
+    padding: 2px var(--space-xs);
+  }
+
+  .join-circle-simple {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+
+  .pagination-btn {
+    font-size: 11px;
+    padding: var(--space-xs);
+    min-width: 50px;
+  }
+
+  .page-number {
+    width: 32px;
+    height: 32px;
+    font-size: 11px;
+  }
+}
+
+/* Loading and Error States */
+.empty-state {
+  text-align: center;
+  padding: var(--space-xl) var(--space-lg);
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: var(--space-md);
+  opacity: 0.6;
+}
+
+.empty-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.empty-description {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 auto var(--space-lg) auto;
+}
+
+/* Animation for court cards */
+.court-card {
+  animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger animation for multiple cards */
+.court-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.court-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.court-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.court-card:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.court-card:nth-child(5) {
+  animation-delay: 0.5s;
+}
+.court-card:nth-child(6) {
+  animation-delay: 0.6s;
+}
