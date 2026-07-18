@@ -1,0 +1,32 @@
+# Gitleaks configuration for BookACourt DevSecOps pipeline.
+#
+# Docs: https://github.com/gitleaks/gitleaks
+
+title = "BookACourt Gitleaks Config"
+
+# Inherit Gitleaks' built-in ruleset
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Public-by-design values and generated artifacts that are not real secrets."
+
+paths = [
+  '''frontend/package-lock\.json''',
+  '''.*\.md''',
+  '''reports/.*''',
+  '''target/''',
+  '''dist/''',
+  '''node_modules/''',
+  '''\.idea/''',
+  '''\.env\.local''',
+  '''firebase-service-account\.json''',
+]
+
+# Public-by-design keys/config that legitimately live in the frontend:
+#   - Stripe PUBLISHABLE key (pk_...) — meant to be public
+#   - Firebase web config (VITE_FIREBASE_*) — public web app identifiers
+regexes = [
+  '''pk_(test|live)_[0-9a-zA-Z]+''',
+  '''VITE_FIREBASE_[A-Z_]+''',
+]

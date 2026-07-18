@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Pre-push: SAST (Semgrep) + dependency scan (Trivy), both via Docker.
+# Report-only: findings are printed but do not block the push. Set SKIP_HOOKS=1 to skip.
+set -uo pipefail
+export MSYS_NO_PATHCONV=1  # Git Bash (Windows): don't rewrite container paths like /src
+[[ "${SKIP_HOOKS:-0}" == "1" ]] && { echo "[pre-push] skipped"; exit 0; }
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+echo "[pre-push] Semgrep (SAST)"
+docker run --rm -v "${REPO_ROOT}:/src" semgrep/semgrep:latest \
+  semgrep scan --config=auto /src || true
+
+echo "[pre-push] Trivy (dependency scan)"
+docker run --rm -v "${REPO_ROOT}:/src" aquasec/trivy:latest \
+  fs --scanners vuln --severity HIGH,CRITICAL /src || true
+
+exit 0

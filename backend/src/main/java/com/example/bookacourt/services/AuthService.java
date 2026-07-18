@@ -24,17 +24,19 @@ public class AuthService {
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     private final UserRepository userRepository;
-    private final FirebaseAuth firebaseAuth;
 
     public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.firebaseAuth = FirebaseAuth.getInstance();
+    }
+
+    private FirebaseAuth firebaseAuth() {
+        return FirebaseAuth.getInstance();
     }
 
     @Transactional
     public AuthResponseDto register(AuthRequestDto request) throws Exception {
 
-        FirebaseToken decodedToken = firebaseAuth.verifyIdToken(request.getFirebaseToken());
+        FirebaseToken decodedToken = firebaseAuth().verifyIdToken(request.getFirebaseToken());
 
         String uid = decodedToken.getUid();
         String email = decodedToken.getEmail();
@@ -76,7 +78,7 @@ public class AuthService {
             return;
         }
         try {
-            firebaseAuth.deleteUser(decodedToken.getUid());
+            firebaseAuth().deleteUser(decodedToken.getUid());
             log.info("Rolled back Firebase user {} after failed registration", decodedToken.getUid());
         } catch (Exception e) {
             log.error("Failed to roll back Firebase user {} after failed registration", decodedToken.getUid(), e);
@@ -93,7 +95,7 @@ public class AuthService {
 
     public AuthResponseDto login(AuthRequestDto request) throws Exception {
 
-        FirebaseToken decodedToken = firebaseAuth.verifyIdToken(request.getFirebaseToken());
+        FirebaseToken decodedToken = firebaseAuth().verifyIdToken(request.getFirebaseToken());
 
         String uid = decodedToken.getUid();
 

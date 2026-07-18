@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -25,6 +27,17 @@ public class CourtController {
 
     public CourtController(CourtService courtService) {
         this.courtService = courtService;
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchCourts(@RequestParam(name = "name", defaultValue = "") String name) {
+        try {
+            List<Map<String, Object>> courts = courtService.searchCourtsByName(name);
+            return ResponseEntity.ok(courts);
+        } catch (Exception e) {
+            log.error("Error searching courts", e);
+            return ResponseEntity.badRequest().body("Error searching courts: " + e.getMessage());
+        }
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")

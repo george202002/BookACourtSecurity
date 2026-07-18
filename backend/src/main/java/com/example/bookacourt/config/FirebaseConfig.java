@@ -22,8 +22,16 @@ public class FirebaseConfig {
         this.resourceLoader = resourceLoader;
     }
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FirebaseConfig.class);
+
     @PostConstruct
     public void initialize() {
+        // Firebase is optional; the app boots without it (e.g. in CI / security testing) when
+        // no service account is available. Auth-protected endpoints simply won't authenticate.
+        if (serviceAccountLocation == null || serviceAccountLocation.isBlank()) {
+            log.warn("Firebase service account not configured — starting without Firebase authentication.");
+            return;
+        }
         try (InputStream serviceAccount = resourceLoader.getResource(serviceAccountLocation).getInputStream()) {
 
             FirebaseOptions options = FirebaseOptions.builder()
@@ -33,11 +41,10 @@ public class FirebaseConfig {
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
             }
-
+            log.info("Firebase initialized from '{}'.", serviceAccountLocation);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize Firebase from '" + serviceAccountLocation
-                    + "'. Place your service account JSON at src/main/resources/firebase-service-account.json"
-                    + " or point FIREBASE_SERVICE_ACCOUNT to its location.", e);
+            log.warn("Could not initialize Firebase from '{}' ({}). Continuing without Firebase.",
+                    serviceAccountLocation, e.getMessage());
         }
     }
 }

@@ -1,0 +1,60 @@
+# Application stack: backend, frontend, PostgreSQL (port 5433), Mailpit.
+# Usage: docker compose up --build
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bookacourt-postgres
+    command: ["postgres", "-p", "5433"]
+    environment:
+      POSTGRES_DB: bookacourt
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-bookacourt_dev_pw}
+    ports:
+      - "5434:5433"   # host 5434 -> container 5433 (avoids clashing with a local Postgres on 5433)
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d bookacourt -p 5433"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: bookacourt-backend
+    container_name: bookacourt-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5433/bookacourt
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-bookacourt_dev_pw}
+      SPRING_MAIL_HOST: mailpit
+      SPRING_MAIL_PORT: "1025"
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: bookacourt-frontend
+    container_name: bookacourt-frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: bookacourt-mailpit
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
+
+volumes:
+  pgdata:

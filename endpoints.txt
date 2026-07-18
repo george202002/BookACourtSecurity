@@ -1,0 +1,19 @@
+# endpoints.txt — targets for the DYNAMIC analysis stage.
+#
+# Format: one target per line.  <METHOD> <URL> [notes]
+# Base URL for the running stack: http://localhost:8080
+#
+# These are the endpoints exercised by sqlmap (SQL injection) and OWASP ZAP (DAST).
+# All targets belong to THIS locally controlled application only.
+
+# --- SQL injection (sqlmap) ---
+# Public court search; the `name` query parameter is concatenated into a native SQL query.
+GET http://localhost:8080/api/courts/search?name=test   # SQLi — inject on `name`
+
+# --- Command injection (manual / ZAP) ---
+# Public diagnostic endpoint; the `host` query parameter is passed to a shell command.
+GET http://localhost:8080/api/utils/ping?host=localhost   # command injection on `host`
+
+# --- DAST / general web endpoints (OWASP ZAP baseline) ---
+GET  http://localhost:8080/api/courts/search?name=a       # crawl entry point
+GET  http://localhost:8080/api/utils/ping?host=localhost

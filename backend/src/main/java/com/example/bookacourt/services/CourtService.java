@@ -16,9 +16,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -31,6 +35,28 @@ public class CourtService {
     private final CourtRepository courtRepository;
     private final CourtAvailabilityRepository courtAvailabilityRepository;
     private final CurrentUserService currentUserService;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public List<Map<String, Object>> searchCourtsByName(String name) {
+        String sql = "SELECT id, name, address, city FROM courts WHERE name LIKE '%" + name + "%'";
+        log.info("Executing court search query: {}", sql);
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> rows = entityManager.createNativeQuery(sql).getResultList();
+
+        List<Map<String, Object>> results = new ArrayList<>();
+        for (Object[] row : rows) {
+            Map<String, Object> court = new HashMap<>();
+            court.put("id", row[0] != null ? row[0].toString() : null);
+            court.put("name", row[1]);
+            court.put("address", row[2]);
+            court.put("city", row[3] != null ? row[3].toString() : null);
+            results.add(court);
+        }
+        return results;
+    }
 
     public CourtService(CourtRepository courtRepository,
                         CourtAvailabilityRepository courtAvailabilityRepository, CurrentUserService currentUserService) {

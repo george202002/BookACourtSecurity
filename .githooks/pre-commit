@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Pre-commit: secret scan (Gitleaks) + frontend lint (ESLint), both via Docker.
+# Report-only: findings are printed but do not block the commit. Set SKIP_HOOKS=1 to skip.
+set -uo pipefail
+export MSYS_NO_PATHCONV=1  # Git Bash (Windows): don't rewrite container paths like /repo
+[[ "${SKIP_HOOKS:-0}" == "1" ]] && { echo "[pre-commit] skipped"; exit 0; }
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+echo "[pre-commit] Gitleaks (secret scan)"
+docker run --rm -v "${REPO_ROOT}:/repo" zricethezav/gitleaks:latest \
+  dir /repo --config=/repo/.gitleaks.toml --redact -v || true
+
+echo "[pre-commit] ESLint (frontend)"
+docker run --rm -v "${REPO_ROOT}/frontend:/app" -w /app node:22-alpine \
+  npx --no-install eslint . || true
+
+exit 0
