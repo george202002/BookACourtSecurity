@@ -33,14 +33,10 @@ docker compose up --build
 |---|---|
 | backend (Spring Boot) | http://localhost:8080 |
 | frontend (React/Nginx) | http://localhost:5173 |
-| postgres | localhost:5434 (db `bookacourt`, user `postgres`) — add to pgAdmin with these |
+| postgres | localhost:5434 |
 | mailpit | http://localhost:8025 |
 
 Stop: `Ctrl+C` then `docker compose down` (add `-v` to wipe the DB volume).
-
-> The container's Postgres is published on host port **5434** (container 5433), so it does not
-> clash with a local Postgres on 5433. Add it to pgAdmin as: host `localhost`, port `5434`,
-> database `bookacourt`, user `postgres`, password `bookacourt_dev_pw`.
 
 Smoke-test the two public vulnerable endpoints:
 
@@ -64,17 +60,21 @@ docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest \
 docker run --rm -v "$PWD:/src" semgrep/semgrep:latest \
   semgrep scan --config=auto --json --output=/src/reports/semgrep.json /src
 
-# Dependency CVEs (Maven + npm)
+# Dependency CVEs — npm (from the lockfile). Java/Maven deps are scanned from the built jar
+# by the image scan below (scanning pom.xml directly is slow and gets rate-limited by Maven).
+# Git Bash on Windows: prefix with MSYS_NO_PATHCONV=1 ; PowerShell: use ${PWD}
 docker run --rm -v "$PWD:/src" aquasec/trivy:latest \
   fs --scanners vuln --severity HIGH,CRITICAL --format json \
-  --output /src/reports/trivy-fs.json /src
+  --output /src/reports/trivy-fs.json /src/frontend/package-lock.json
 
-# Dockerfile lint
-docker run --rm -i hadolint/hadolint hadolint --format json - < backend/Dockerfile
+# Dockerfile lint  (saves JSON to reports/)
+docker run --rm -i hadolint/hadolint hadolint --format json - < backend/Dockerfile > reports/hadolint.json
 
-# Image CVEs (after `docker compose build`)
-docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest \
-  image bookacourt-backend
+# Image CVEs + bundled Java deps (after `docker compose build`) — detects commons-text CVE-2022-42889
+# (saves JSON to reports/; Git Bash: prefix MSYS_NO_PATHCONV=1)
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/reports:/out" \
+  aquasec/trivy:latest image --severity HIGH,CRITICAL \
+  --format json --output /out/trivy-image.json bookacourt-backend
 
 # Dynamic scans (stack running)
 bash security/scripts/run-nmap.sh
@@ -108,11 +108,23 @@ docker run -d --name jenkins \
   ```
 - Install suggested plugins, create the admin user.
 
-### 4.2 Give Jenkins the Docker CLI
+### 4.2 Give Jenkins the Docker CLI + Compose v2 plugin
 
 ```bash
-docker exec -u root jenkins bash -c "apt-get update && apt-get install -y docker.io"
+# Docker CLI
+docker exec -u root jenkins bash -c "apt-get update && apt-get install -y docker.io curl"
+# Docker Compose v2 plugin (the docker.io package does NOT include `docker compose`)
+docker exec -u root jenkins bash -c "mkdir -p /usr/local/lib/docker/cli-plugins && \
+  curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 \
+  -o /usr/local/lib/docker/cli-plugins/docker-compose && \
+  chmod +x /usr/local/lib/docker/cli-plugins/docker-compose"
 docker restart jenkins
+# verify:
+docker exec jenkins docker compose version
+
+# Grant the `jenkins` user access to the Docker socket (run AFTER the restart above; a restart
+# resets this). Without it, every docker command fails with "permission denied ... docker.sock".
+docker exec -u root jenkins chmod 666 /var/run/docker.sock
 ```
 
 ### 4.3 Create the pipeline job
@@ -123,6 +135,10 @@ docker restart jenkins
 
 The pipeline checks out the code, runs the static scans, builds the images, scans the image,
 starts the stack, runs the dynamic scans, and archives everything under `reports/`.
+
+> **Stop the local app stack first** (`docker compose down`). The CI stack uses the same
+> `container_name` values and host ports (8080, 5173, 5434, ...), so the two cannot run at the
+> same time — the pipeline's Deploy stage will fail with a container-name conflict otherwise.
 
 ## 5. Results
 
