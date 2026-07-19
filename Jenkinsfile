@@ -13,6 +13,7 @@ pipeline {
 
     environment {
         COMPOSE_PROJECT_NAME = 'bookacourt'   // sets the project name without the -p flag
+        DOCKER_BUILDKIT = '0'
         NETWORK = 'bookacourt_default'
         BACKEND = 'http://backend:8080'
         FRONTEND = 'http://frontend'
@@ -61,7 +62,8 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'docker compose build'
+                sh 'docker build -t bookacourt-backend ./backend'
+                sh 'docker build -t bookacourt-frontend ./frontend'
             }
         }
 
@@ -78,7 +80,7 @@ pipeline {
 
         stage('Deploy stack') {
             steps {
-                sh 'docker compose up -d'
+                sh 'docker compose up -d --no-build'
                 sh '''for i in $(seq 1 30); do
                         docker run --rm --network ${NETWORK} curlimages/curl:latest \
                           -sf ${BACKEND}/api/courts/search?name=a && break
