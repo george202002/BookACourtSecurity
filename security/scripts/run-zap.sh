@@ -5,7 +5,7 @@
 set -euo pipefail
 export MSYS_NO_PATHCONV=1  # Git Bash (Windows): keep container paths literal
 
-TARGET="${1:-http://host.docker.internal:8080}"
+TARGET="${1:-http://host.docker.internal:5173}"
 OUT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || pwd)/reports"
 mkdir -p "${OUT_DIR}"
 

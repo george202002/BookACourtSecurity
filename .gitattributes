@@ -1,0 +1,4 @@
+# Shell scripts and Git hooks must use LF so they run under bash on any OS.
+*.sh            text eol=lf
+.githooks/**    text eol=lf
+mvnw            text eol=lf

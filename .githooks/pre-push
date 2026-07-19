@@ -11,8 +11,10 @@ echo "[pre-push] Semgrep (SAST)"
 docker run --rm -v "${REPO_ROOT}:/src" semgrep/semgrep:latest \
   semgrep scan --config=auto /src || true
 
-echo "[pre-push] Trivy (dependency scan)"
+echo "[pre-push] Trivy (npm dependency scan)"
+# Scans the npm lockfile directly (fast, offline). Java/Maven deps are covered by the image
+# scan (bundled jar) in CI, avoiding slow, rate-limited pom.xml resolution.
 docker run --rm -v "${REPO_ROOT}:/src" aquasec/trivy:latest \
-  fs --scanners vuln --severity HIGH,CRITICAL /src || true
+  fs --scanners vuln --severity HIGH,CRITICAL /src/frontend/package-lock.json || true
 
 exit 0

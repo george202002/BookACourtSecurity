@@ -12,9 +12,10 @@ pipeline {
     }
 
     environment {
-        PROJECT = 'bookacourt'
+        COMPOSE_PROJECT_NAME = 'bookacourt'   // sets the project name without the -p flag
         NETWORK = 'bookacourt_default'
         BACKEND = 'http://backend:8080'
+        FRONTEND = 'http://frontend'
     }
 
     stages {
@@ -43,9 +44,12 @@ pipeline {
 
         stage('Dependency scan') {
             steps {
+                // npm deps from the lockfile (fast, offline). Java/Maven deps are scanned from the
+                // bundled jar in the Image scan stage, avoiding slow/rate-limited pom.xml resolution.
                 sh '''docker run --rm -v "${WORKSPACE}:/src" aquasec/trivy:latest \
                         fs --scanners vuln --severity HIGH,CRITICAL \
-                        --format json --output /src/reports/trivy-fs.json /src || true'''
+                        --format json --output /src/reports/trivy-fs.json \
+                        /src/frontend/package-lock.json || true'''
             }
         }
 
@@ -57,7 +61,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'docker compose -p ${PROJECT} build'
+                sh 'docker compose build'
             }
         }
 
@@ -74,7 +78,7 @@ pipeline {
 
         stage('Deploy stack') {
             steps {
-                sh 'docker compose -p ${PROJECT} up -d'
+                sh 'docker compose up -d'
                 sh '''for i in $(seq 1 30); do
                         docker run --rm --network ${NETWORK} curlimages/curl:latest \
                           -sf ${BACKEND}/api/courts/search?name=a && break
@@ -87,12 +91,14 @@ pipeline {
             steps {
                 sh '''docker run --rm --network ${NETWORK} instrumentisto/nmap:latest \
                         -sV -Pn -p 8080 backend > reports/nmap.txt || true'''
+                // ZAP scans the frontend (HTML -> full header rule coverage); the backend root is
+                // auth-gated (403) so it yields no passive findings.
                 sh '''docker run --rm --network ${NETWORK} -v "${WORKSPACE}/reports:/zap/wrk:rw" \
                         ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
-                        -t ${BACKEND} -r zap-baseline.html -J zap-baseline.json || true'''
+                        -t ${FRONTEND} -r zap-baseline.html -J zap-baseline.json || true'''
                 sh '''docker run --rm --network ${NETWORK} -v "${WORKSPACE}/reports/sqlmap:/out" \
-                        ghcr.io/sqlmapproject/sqlmap:latest \
-                        -u "${BACKEND}/api/courts/search?name=test" \
+                        googlesky/sqlmap:latest \
+                        -u "${BACKEND}/api/courts/search?name=Padel" \
                         --batch --dbms=postgresql --level=2 --risk=2 --output-dir=/out || true'''
             }
         }
@@ -106,7 +112,7 @@ pipeline {
 
     post {
         always {
-            sh 'docker compose -p ${PROJECT} down -v || true'
+            sh 'docker compose down -v || true'
             archiveArtifacts artifacts: 'reports/**', allowEmptyArchive: true
         }
     }
