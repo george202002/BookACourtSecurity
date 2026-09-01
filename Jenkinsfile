@@ -81,6 +81,7 @@ pipeline {
 
         stage('Deploy stack') {
             steps {
+                sh 'docker rm -f bookacourt-postgres bookacourt-backend bookacourt-frontend bookacourt-mailpit || true'
                 sh 'docker compose up -d --no-build'
                 sh '''for i in $(seq 1 30); do
                         docker run --rm --network ${NETWORK} curlimages/curl:latest \
