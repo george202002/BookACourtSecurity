@@ -30,16 +30,17 @@ pipeline {
 
         stage('Secret scan') {
             steps {
-                sh '''docker run --rm -v "${WORKSPACE}:/repo" zricethezav/gitleaks:latest \
-                        dir /repo --config=/repo/.gitleaks.toml \
-                        --report-format json --report-path /repo/reports/gitleaks.json || true'''
+                sh '''docker run --rm --volumes-from jenkins zricethezav/gitleaks:latest \
+                        dir "${WORKSPACE}" --config="${WORKSPACE}/.gitleaks.toml" \
+                        --report-format json --report-path "${WORKSPACE}/reports/gitleaks.json" || true'''
             }
         }
 
         stage('SAST') {
             steps {
-                sh '''docker run --rm -v "${WORKSPACE}:/src" semgrep/semgrep:latest \
-                        semgrep scan --config=auto --json --output=/src/reports/semgrep.json /src || true'''
+                sh '''docker run --rm --volumes-from jenkins semgrep/semgrep:latest \
+                        semgrep scan --config=auto --json --output="${WORKSPACE}/reports/semgrep.json" \
+                        --exclude=node_modules --exclude=target --exclude=dist "${WORKSPACE}" || true'''
             }
         }
 
@@ -47,10 +48,10 @@ pipeline {
             steps {
                 // npm deps from the lockfile (fast, offline). Java/Maven deps are scanned from the
                 // bundled jar in the Image scan stage, avoiding slow/rate-limited pom.xml resolution.
-                sh '''docker run --rm -v "${WORKSPACE}:/src" aquasec/trivy:latest \
+                sh '''docker run --rm --volumes-from jenkins aquasec/trivy:latest \
                         fs --scanners vuln --severity HIGH,CRITICAL \
-                        --format json --output /src/reports/trivy-fs.json \
-                        /src/frontend/package-lock.json || true'''
+                        --format json --output "${WORKSPACE}/reports/trivy-fs.json" \
+                        "${WORKSPACE}/frontend/package-lock.json" || true'''
             }
         }
 
@@ -71,9 +72,9 @@ pipeline {
             steps {
                 sh '''docker run --rm \
                         -v /var/run/docker.sock:/var/run/docker.sock \
-                        -v "${WORKSPACE}/reports:/reports" \
+                        --volumes-from jenkins \
                         aquasec/trivy:latest image \
-                        --format json --output /reports/trivy-image.json \
+                        --format json --output "${WORKSPACE}/reports/trivy-image.json" \
                         bookacourt-backend || true'''
             }
         }
@@ -95,13 +96,16 @@ pipeline {
                         -sV -Pn -p 8080 backend > reports/nmap.txt || true'''
                 // ZAP scans the frontend (HTML -> full header rule coverage); the backend root is
                 // auth-gated (403) so it yields no passive findings.
-                sh '''docker run --rm --network ${NETWORK} -v "${WORKSPACE}/reports:/zap/wrk:rw" \
+                sh '''docker run --rm --network ${NETWORK} --volumes-from jenkins \
                         ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
-                        -t ${FRONTEND} -r zap-baseline.html -J zap-baseline.json || true'''
-                sh '''docker run --rm --network ${NETWORK} -v "${WORKSPACE}/reports/sqlmap:/out" \
+                        -t ${FRONTEND} \
+                        -r "${WORKSPACE}/reports/zap-baseline.html" \
+                        -J "${WORKSPACE}/reports/zap-baseline.json" || true'''
+                sh '''docker run --rm --network ${NETWORK} --volumes-from jenkins \
                         googlesky/sqlmap:latest \
                         -u "${BACKEND}/api/courts/search?name=Padel" \
-                        --batch --dbms=postgresql --level=2 --risk=2 --output-dir=/out || true'''
+                        --batch --dbms=postgresql --level=2 --risk=2 \
+                        --output-dir="${WORKSPACE}/reports/sqlmap" || true'''
             }
         }
 
